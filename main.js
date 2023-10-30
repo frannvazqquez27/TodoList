@@ -1,68 +1,62 @@
-document.addEventListener("DOMContentLoaded", function () {
-  const ENTRADA_TAREA = document.querySelector("input");
-  const BOTON_AGREGAR_TAREA = document.querySelector("button");
-  const CONTADOR_TAREAS = document.querySelector("span:nth-child(2)");
-  const SIN_TAREAS = document.querySelector("p");
-  const LISTA_DE_TAREAS = document.querySelector("ul");
+const formulario = document.querySelector('form');
+const entrada = document.querySelector('input');
+const listaUl = document.querySelector('ul');
+const vacio = document.querySelector('.empty');
+const contadorTareas = document.querySelector('.task-count span:last-child');
 
-  if (typeof Storage !== "undefined") {
-    const tareas = JSON.parse(localStorage.getItem("tareas")) || [];
-    tareas.forEach((tarea, index) => {
-      const elementoTarea = document.createElement("li");
-      elementoTarea.innerHTML = `
-        ${tarea}
-        <button class="delete" data-index="${index}">x</button>
-      `;
-      LISTA_DE_TAREAS.appendChild(elementoTarea);
+let tareas = [];
+cargarTareas();
 
-      elementoTarea.querySelector("button.delete").addEventListener("click", function () {
-        const tareas = JSON.parse(localStorage.getItem("tareas")) || [];
-        tareas.splice(index, 1);
-        localStorage.setItem("tareas", JSON.stringify(tareas));
-        LISTA_DE_TAREAS.innerHTML = "";
-        tareas.forEach((tarea, i) => {
-          const elementoTarea = document.createElement("li");
-          elementoTarea.innerHTML = `
-            ${tarea}
-            <button class="delete" data-index="${i}">x</button>
-          `;
-          LISTA_DE_TAREAS.appendChild(elementoTarea);
-        });
-        actualizarContadorTareas();
-        alternarTextoSinTareas();
-      });
-    });
-
-    actualizarContadorTareas();
-    alternarTextoSinTareas();
+function cargarTareas() {
+  const tareasAlmacenadas = localStorage.getItem('tareas');
+  if (tareasAlmacenadas) {
+    tareas = JSON.parse(tareasAlmacenadas);
+    renderizarTareas();
   }
+}
 
-  BOTON_AGREGAR_TAREA.addEventListener("click", function () {
-    const textoTarea = ENTRADA_TAREA.value.trim();
-    if (textoTarea !== "") {
-      const tareas = JSON.parse(localStorage.getItem("tareas")) || [];
-      tareas.push(textoTarea);
-      localStorage.setItem("tareas", JSON.stringify(tareas));
-      const index = tareas.length - 1;
-      const elementoTarea = document.createElement("li");
-      elementoTarea.innerHTML = `
-        ${textoTarea}
-        <button class="delete" data-index="${index}">x</button>
-      `;
-      LISTA_DE_TAREAS.appendChild(elementoTarea);
-      ENTRADA_TAREA.value = "";
-      actualizarContadorTareas();
-      alternarTextoSinTareas();
-    }
+function guardarTareas() {
+  localStorage.setItem('tareas', JSON.stringify(tareas));
+}
+
+function renderizarTareas() {
+  listaUl.innerHTML = '';
+  tareas.forEach(tarea => {
+    const li = document.createElement('li');
+    li.innerHTML = `
+      <p>${tarea}</p>
+      <button class="btn-delete">x</button>
+    `;
+    listaUl.appendChild(li);
   });
 
-  function actualizarContadorTareas() {
-    const tareas = JSON.parse(localStorage.getItem("tareas")) || [];
-    CONTADOR_TAREAS.textContent = tareas.length;
+  if (tareas.length === 0) {
+    vacio.style.display = 'block';
+  } else {
+    vacio.style.display = 'none';
   }
 
-  function alternarTextoSinTareas() {
-    const tareas = JSON.parse(localStorage.getItem("tareas")) || [];
-    SIN_TAREAS.style.display = tareas.length === 0 ? "block" : "none";
+  contadorTareas.textContent = tareas.length;
+}
+
+formulario.addEventListener('submit', e => {
+  e.preventDefault();
+
+  const tarea = entrada.value.trim();
+
+  if (tarea !== '') {
+    tareas.push(tarea);
+    guardarTareas();
+    renderizarTareas();
+    entrada.value = '';
+  }
+});
+
+listaUl.addEventListener('click', e => {
+  if (e.target.classList.contains('btn-delete')) {
+    const indice = e.target.parentElement.rowIndex - 1;
+    tareas.splice(indice, 1);
+    guardarTareas();
+    renderizarTareas();
   }
 });
