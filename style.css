@@ -64,7 +64,6 @@ li p {
   width: 80%;
 }
 
-/*Este es el único estilo que se debe añadir desde JS*/
 .btn-delete {
   margin-left: auto;
   border: none;
