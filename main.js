@@ -21,11 +21,11 @@ function guardarTareas() {
 
 function renderizarTareas() {
   listaUl.innerHTML = '';
-  tareas.forEach(tarea => {
+  tareas.forEach((tarea, index) => {
     const li = document.createElement('li');
     li.innerHTML = `
       <p>${tarea}</p>
-      <button class="btn-delete">x</button>
+      <button class="btn-delete" data-index="${index}">x</button>
     `;
     listaUl.appendChild(li);
   });
@@ -54,8 +54,8 @@ formulario.addEventListener('submit', e => {
 
 listaUl.addEventListener('click', e => {
   if (e.target.classList.contains('btn-delete')) {
-    const indice = e.target.parentElement.rowIndex - 1;
-    tareas.splice(indice, 1);
+    const index = e.target.getAttribute('data-index');
+    tareas.splice(index, 1);
     guardarTareas();
     renderizarTareas();
   }
