@@ -1,62 +1,62 @@
-const formulario = document.querySelector('form');
-const entrada = document.querySelector('input');
-const listaUl = document.querySelector('ul');
-const vacio = document.querySelector('.empty');
-const contadorTareas = document.querySelector('.task-count span:last-child');
+const form = document.querySelector('form');
+const input = document.querySelector('input');
+const ulList = document.querySelector('ul');
+const emptyMessage = document.querySelector('.empty');
+const tasksCounter = document.querySelector('.task-count span:last-child');
 
-let tareas = [];
-cargarTareas();
+let tasks = [];
+loadTasks();
 
-function cargarTareas() {
-  const tareasAlmacenadas = localStorage.getItem('tareas');
-  if (tareasAlmacenadas) {
-    tareas = JSON.parse(tareasAlmacenadas);
-    renderizarTareas();
+function loadTasks() {
+  const storedTasks = localStorage.getItem('tasks');
+  if (storedTasks) {
+    tasks = JSON.parse(storedTasks);
+    renderTasks();
   }
 }
 
-function guardarTareas() {
-  localStorage.setItem('tareas', JSON.stringify(tareas));
+function saveTasks() {
+  localStorage.setItem('tasks', JSON.stringify(tasks));
 }
 
-function renderizarTareas() {
-  listaUl.innerHTML = '';
-  tareas.forEach((tarea, index) => {
+function renderTasks() {
+  ulList.innerHTML = '';
+  tasks.forEach((task, index) => {
     const li = document.createElement('li');
     li.innerHTML = `
-      <p>${tarea}</p>
+      <p>${task}</p>
       <button class="btn-delete" data-index="${index}">x</button>
     `;
-    listaUl.appendChild(li);
+    ulList.appendChild(li);
   });
 
-  if (tareas.length === 0) {
-    vacio.style.display = 'block';
+  if (tasks.length === 0) {
+    emptyMessage.style.display = 'block';
   } else {
-    vacio.style.display = 'none';
+    emptyMessage.style.display = 'none';
   }
 
-  contadorTareas.textContent = tareas.length;
+  tasksCounter.textContent = tasks.length;
 }
 
-formulario.addEventListener('submit', e => {
+form.addEventListener('submit', e => {
   e.preventDefault();
 
-  const tarea = entrada.value.trim();
+  const task = input.value.trim();
 
-  if (tarea !== '') {
-    tareas.push(tarea);
-    guardarTareas();
-    renderizarTareas();
-    entrada.value = '';
+  if (task !== '') {
+    tasks.push(task);
+    saveTasks();
+    renderTasks();
+    input.value = '';
   }
 });
 
-listaUl.addEventListener('click', e => {
+ulList.addEventListener('click', e => {
   if (e.target.classList.contains('btn-delete')) {
     const index = e.target.getAttribute('data-index');
-    tareas.splice(index, 1);
-    guardarTareas();
-    renderizarTareas();
+    tasks.splice(index, 1);
+    saveTasks();
+    renderTasks();
   }
 });

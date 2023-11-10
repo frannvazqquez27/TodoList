@@ -99,6 +99,7 @@ li p {
 }
 
 .empty {
+  display: none;
   color: darkslategrey;
 }
 
